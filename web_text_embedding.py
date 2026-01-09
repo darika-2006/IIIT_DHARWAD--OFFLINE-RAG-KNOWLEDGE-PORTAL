@@ -6,8 +6,26 @@ import faiss  #faisss - cpu for library installation
 import psycopg2
 import os
 from docx import Document #docx-python 
+from passlib.context import CryptContext
+from pydantic import BaseModel
+from fastapi import HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+
+
+
+#for bcrypt :
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
 # Server connection (APP) 
 app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 UPLOAD_DIR = "uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
@@ -213,3 +231,79 @@ def delete_document(doc_id: int):
         "message": "Document deleted successfully",
         "doc_id": doc_id
     }
+
+class SignupRequest(BaseModel):
+    user_id: str
+    username: str
+    password: str
+    domain_role: str  # admin / user
+
+
+class LoginRequest(BaseModel):
+    username: str
+    password: str
+
+def hash_password(password: str) -> str:
+    return pwd_context.hash(password)
+
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    return pwd_context.verify(plain_password, hashed_password)
+
+@app.post("/signup")
+def signup(data: SignupRequest):
+    # Check if username exists
+    cur.execute(
+        "SELECT username FROM login_credentials WHERE username = %s",
+        (data.username,)
+    )
+    if cur.fetchone():
+        raise HTTPException(status_code=400, detail="Username already exists")
+
+    hashed_pw = hash_password(data.password)
+
+    try:
+        cur.execute(
+            """
+            INSERT INTO login_credentials (user_id, username, password_hash, domain_role)
+            VALUES (%s, %s, %s, %s)
+            """,
+            (data.user_id, data.username, hashed_pw, data.domain_role)
+        )
+        conn.commit()
+    except Exception as e:
+        conn.rollback()
+        raise HTTPException(status_code=500, detail="Signup failed")
+
+    return {
+        "message": "Signup successful",
+        "username": data.username,
+        "role": data.domain_role
+    }
+
+@app.post("/login")
+def login(data: LoginRequest):
+    cur.execute(
+        """
+        SELECT user_id, username, password_hash, domain_role
+        FROM login_credentials
+        WHERE username = %s
+        """,
+        (data.username,)
+    )
+    user = cur.fetchone()
+
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+
+    user_id, username, password_hash, role = user
+
+    if not verify_password(data.password, password_hash):
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+
+    return {
+        "message": "Login successful",
+        "user_id": user_id,
+        "username": username,
+        "role": role
+    }
+

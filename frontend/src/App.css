@@ -1,0 +1,53 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-void-black: #020617;
+  --color-radar-green: #10b981;
+  --color-avionics-blue: #0ea5e9;
+  --color-alert-amber: #f59e0b;
+  --color-slate-900: #0f172a;
+  --color-slate-800: #1e293b;
+
+  --font-mono: "JetBrains Mono", monospace;
+  --font-sans: "Inter", sans-serif;
+
+  --background-image-hex-mesh: url('/assets/hex-mesh.png');
+  --background-image-radar-sweep: conic-gradient(from 0deg at 50% 50%, rgba(14, 165, 233, 0) 0deg, rgba(14, 165, 233, 0.1) 360deg);
+
+  --shadow-neon-blue: 0 0 10px rgba(14, 165, 233, 0.5);
+  --shadow-neon-green: 0 0 10px rgba(16, 185, 129, 0.5);
+}
+
+@layer base {
+  body {
+    @apply bg-slate-900 text-slate-100 font-sans overflow-x-hidden;
+    background: radial-gradient(circle at center, #0f172a 0%, #020617 100%);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-mono tracking-tight;
+  }
+}
+
+@layer utilities {
+  .glass-panel {
+    @apply bg-slate-900/40 backdrop-blur-md border border-white/10 shadow-xl;
+  }
+  
+  .neon-border-blue {
+    @apply border border-avionics-blue shadow-[0_0_10px_rgba(14,165,233,0.3)];
+  }
+
+  .neon-text-blue {
+    @apply text-avionics-blue drop-shadow-[0_0_5px_rgba(14,165,233,0.8)];
+  }
+
+  .hud-btn {
+    @apply px-6 py-3 bg-avionics-blue/20 border border-avionics-blue/50 text-avionics-blue font-mono uppercase tracking-widest hover:bg-avionics-blue/40 hover:border-avionics-blue hover:shadow-neon-blue transition-all duration-300;
+  }
+
+  .hud-input {
+    @apply bg-slate-950/50 border border-slate-700 text-slate-100 placeholder-slate-500 focus:border-avionics-blue focus:ring-1 focus:ring-avionics-blue outline-none transition-all duration-300;
+  }
+}

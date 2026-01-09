@@ -33,4 +33,4 @@ CREATE TABLE chunks_metadata (
         FOREIGN KEY (doc_id)
         REFERENCES documents(doc_id)
         ON DELETE CASCADE
-);
+)
