@@ -12,7 +12,7 @@ export default function RoleSelect({ setRole }) {
         {/* Right Panel - Interaction (Now Full Width) */}
         <div className="p-12 flex flex-col justify-center bg-slate-900/50 backdrop-blur-sm relative">
              <div className="absolute top-4 right-4 text-xs text-slate-500 font-mono">
-                SECURE ACCESS PORT V2.4
+                THE HACKALTITUDE V2.5
              </div>
 
           <h2 className="text-3xl font-mono mb-8 text-center bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">SELECT CLEARANCE</h2>
