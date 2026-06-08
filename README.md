@@ -72,7 +72,7 @@ Relationships:
 
 - Python 3.9+
 - PostgreSQL running locally
-- A database named `RAGY`
+- A PostgreSQL database (the current source code defaults to `RAGY`)
 - Access to install Python packages
 
 > Note: Current code uses hardcoded DB connection values in both Python files.
@@ -173,7 +173,7 @@ Soft-deletes a document by setting `is_active = FALSE` in `documents` and `chunk
 ## Notes and limitations
 
 - DB credentials and paths are hardcoded in source files.
-- `allowed_roles` matching uses string pattern matching (`ILIKE`), so role formatting should be consistent.
+- `allowed_roles` matching uses string pattern matching (`ILIKE`), so keep role formatting consistent. A simple approach is storing roles as lowercase comma-separated values (example: `student,faculty,admin`) and querying with lowercase role input.
 - Deletion is soft-delete only; vectors remain in FAISS and are filtered by DB activity flags during retrieval.
 
 ---
@@ -185,4 +185,3 @@ Soft-deletes a document by setting `is_active = FALSE` in `documents` and `chunk
 - Add tests and CI workflow
 - Add dependency lock file and reproducible setup scripts
 - Introduce migrations (Alembic) for schema management
-
